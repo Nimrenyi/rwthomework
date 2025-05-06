@@ -1,7 +1,8 @@
 from matplotlib.pyplot import savefig, rcParams
 from numpy import zeros, sqrt
+from glob import glob
+import inspect
 import shutil
-import glob
 import time
 import sys
 import os
@@ -25,7 +26,8 @@ class Exercise:
         - clear_old_plots
     """
     def __init__(self, verbose=True):
-        filepath = os.path.dirname(__file__)
+        importing_filename = inspect.stack()[1].filename
+        filepath = os.path.dirname(importing_filename)
         os.chdir(filepath)
         if filepath.endswith('scripts'):
             os.chdir('..')
