@@ -25,7 +25,8 @@ class Exercise:
         - tracefunc
         - clear_old_plots
     """
-    def __init__(self, verbose=True):
+    def __init__(self, version, verbose=True):
+        self.version = version
         importing_filename = inspect.stack()[1].filename
         filepath = os.path.dirname(importing_filename)
         os.chdir(filepath)
@@ -39,6 +40,12 @@ class Exercise:
 
         self.exercise_number = sys.argv[0][-5:-3]
         self.EXERCISE_NAME = 'Aufgabenteil'
+
+    def check_version(self):
+        from importlib.metadata import version
+
+        if version('rwthomework') != self.version:
+            raise Exception('Das Skript braucht version von rwthomework', self.version)
 
     def tracefunc(self, frame, event, arg):
         """
@@ -172,10 +179,14 @@ class Exercise:
             print(Output, '\n')
 
     def print_optimize_results(self, res):
-        s = (f"The algorithm finished sucessflly {res.success}\n"
+        stat_dict = {
+            1: 'yes',
+            0: 'no'
+        }
+        s = (f"The algorithm finished sucessfully: {stat_dict[res.success]}\n"
              f"The optimal parameters are {res.x}\n"
              f"The minimal function value is {res.fun}")
-        print(s)
+        print(s, '\n')
 
 
 def main():
