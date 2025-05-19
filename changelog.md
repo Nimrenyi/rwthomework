@@ -1,6 +1,7 @@
 ### 0.0.1.4
 
 - change tracefunc to run method
+- extend check_version command
 
 ### 0.0.1.3
 

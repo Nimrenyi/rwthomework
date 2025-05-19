@@ -6,7 +6,6 @@ import shutil
 import time
 import sys
 import os
-import re
 
 
 class Exercise:
@@ -27,12 +26,14 @@ class Exercise:
     """
     def __init__(self, version='', verbose=True):
         self.version = version
+        self.verbose = verbose
+        self.start_time = time.time()
+
         importing_filename = inspect.stack()[1].filename
         filepath = os.path.dirname(importing_filename)
         os.chdir(filepath)
         if filepath.endswith('scripts'):
             os.chdir('..')
-        self.start_time = time.time()
         self.plots_dir = self.setup_plots_dir()
 
         self.exercise_number = sys.argv[0][-5:-3]
@@ -42,7 +43,10 @@ class Exercise:
         from importlib.metadata import version
 
         if version('rwthomework') != self.version:
-            raise Exception('Das Skript braucht version von rwthomework', self.version)
+            raise Exception(
+                'Das Skript braucht version von rwthomework', self.version,
+                '\n Diese kann z.B. mit pip install --force-reinstall rwthomework==', self.version
+            )
 
     def recursive_filesearch(self, file_name):
         """
@@ -100,7 +104,6 @@ class Exercise:
             is_from_exercise = sys.argv[0][-5:-3] == filename[:2]
             if is_from_exercise:
                 os.remove(file_path)
-        print('removed old plots')
 
     def save_plot(self, name: str):
         """
@@ -149,14 +152,18 @@ class Exercise:
 
     def run(self):
         for method in self.__dir__():
-            if 'exercise' in method:
+            if not method[:-1].endswith('exercise_'):
+                continue
+            if self.verbose:
                 print(f'\nAufgabenteil ({method[-1]})\n')
-                getattr(self, method)()
+            getattr(self, method)()
         self.clear_old_plots()
 
 
 def main():
-    test = Exercise()
+    from importlib.metadata import version
+
+    test = Exercise(version('rwthomework'))
     test.setup_plots_dir()
     test.save_plot('s')
     shutil.rmtree('plots/')
