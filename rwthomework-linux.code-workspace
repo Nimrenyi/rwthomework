@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cornflakes.linter.executablePath": "./.venv/bin/flake8",
+		"makefile.configureOnOpen": false
+	}
+}
