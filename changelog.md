@@ -1,3 +1,8 @@
+### 0.0.1.5 [22/05/2025]
+
+- added plots-darkmode
+
+
 ### 0.0.1.4
 
 - change tracefunc to run method
