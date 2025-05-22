@@ -24,9 +24,10 @@ class Exercise:
         - tracefunc
         - clear_old_plots
     """
-    def __init__(self, version='', verbose=True):
+    def __init__(self, version='', verbose=True, plot_dark_mode=False):
         self.version = version
         self.verbose = verbose
+        self.plot_dark_mode = plot_dark_mode
         self.start_time = time.time()
 
         importing_filename = inspect.stack()[1].filename
@@ -83,9 +84,13 @@ class Exercise:
             'lines.linewidth': 2.0,
         })
 
-        if not os.path.exists('plots'):
-            os.mkdir('plots')
-        return 'plots/'
+        if self.plot_dark_mode:
+            rcParams.update({
+                "ytick.color": "w",
+                "xtick.color": "w",
+                "axes.labelcolor": "w",
+                "axes.edgecolor": "w"
+            })
 
     def clear_old_plots(self):
         """
@@ -113,7 +118,8 @@ class Exercise:
         Args:
             name (str): name for the plot
         """
-        savefig(f'{self.plots_dir}{self.exercise_number}-{name}')
+        plot_name = f'{self.plots_dir}{self.exercise_number}-{name}'
+        savefig(plot_name, transparent=self.plot_dark_mode)
 
     def print_fit_results(self, par, cov):
         """
