@@ -92,6 +92,10 @@ class Exercise:
                 "axes.edgecolor": "w"
             })
 
+        if not os.path.exists('plots'):
+            os.mkdir('plots')
+        return 'plots/'
+
     def clear_old_plots(self):
         """
         Deletes old plots from the exercise.
