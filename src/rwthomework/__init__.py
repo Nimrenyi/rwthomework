@@ -89,7 +89,10 @@ class Exercise:
                 "ytick.color": "w",
                 "xtick.color": "w",
                 "axes.labelcolor": "w",
-                "axes.edgecolor": "w"
+                "axes.edgecolor": "w",
+                'legend.facecolor': '0.15',
+                'legend.edgecolor': 'w',
+                'legend.labelcolor': 'w'
             })
 
         if not os.path.exists('plots'):
