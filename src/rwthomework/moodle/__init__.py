@@ -698,10 +698,11 @@ def download(ruleset_names=None, print_files=False, download_files=True, force_d
     if num_files == 0:
         return
 
-    progress.set_maximum(num_files)
-    progress.set_progress(0)
-    print(f"Downloading {num_files} files from Moodle.")
-    progress.print(first_print=True)
+    if download_files:
+        progress.set_maximum(num_files)
+        progress.set_progress(0)
+        print(f"Downloading {num_files} files from Moodle.")
+        progress.print(first_print=True)
 
     for i in range(num_files):
         info = info_without_duplicate_directories[i]
