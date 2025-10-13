@@ -1,7 +1,7 @@
 all: build upload
 
 build:
-	py -m build
+	python3 -m build
 
 upload:
-	py -m twine upload dist/*
+	python3 -m twine upload dist/*
