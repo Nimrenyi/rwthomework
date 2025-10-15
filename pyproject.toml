@@ -1,6 +1,6 @@
 [project]
 name = "rwthomework"
-version = "0.0.2.0"
+version = "0.0.2.1"
 authors = [
   { name="Manuel Biwer", email="manuel.biwer@rwth-aachen.de" },
   { name="Janik Heiler", email="janik.heiler@rwth-aachen.de" },
@@ -11,6 +11,10 @@ requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
+]
+dependencies = [
+  "matplotlib",
+  "requests"
 ]
 license = "GPL-3.0"
 license-files = ["LICEN[CS]E*"]
