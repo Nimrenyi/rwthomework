@@ -1,4 +1,8 @@
-### 0.0.2.2
+### 0.0.3.0
+
+#### Exercise
+
+- fix exercise_number generation for files without numerical ending
 
 #### Moodle
 
