@@ -715,7 +715,9 @@ def download(ruleset_names=None, print_files=False, download_files=True, force_d
             progress.set_progress(i+1)
             progress.print()
 
-    progress.print("finished")
+    if download_files:
+        progress.print("finished")
+        print()
 
 
 if __name__ == "__main__":
