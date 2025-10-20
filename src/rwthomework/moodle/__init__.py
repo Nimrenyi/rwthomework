@@ -232,21 +232,22 @@ def check_directory_validity(path, create=False, raise_exceptions=True):
     return True
 
 
-def check_file_validity(path, suffix, create=None, raise_exceptions=True):
+def check_file_validity(path, suffix=None, create=None, raise_exceptions=True):
     if not isinstance(path, str):
         if not raise_exceptions:
             return False
         raise TypeError(f"Path must be of type string, got type {type(path)}.")
 
-    if not isinstance(suffix, str):
-        if not raise_exceptions:
-            return False
-        raise TypeError(f"Suffix must be of type string, got type {type(suffix)}.")
+    if suffix is not None:
+        if not isinstance(suffix, str):
+            if not raise_exceptions:
+                return False
+            raise TypeError(f"Suffix must be of type string, got type {type(suffix)}.")
 
-    if not path.endswith(suffix):
-        if not raise_exceptions:
-            return False
-        raise ValueError(f"Path must point to file with suffix \"{suffix}\".")
+        if not path.endswith(suffix):
+            if not raise_exceptions:
+                return False
+            raise ValueError(f"Path must point to file with suffix \"{suffix}\".")
 
     if not os.path.isfile(path):
         if create is None:
@@ -340,7 +341,7 @@ def extract_essential_configs():
     course_id = get_value_of_nested_at(config, "course-id")
 
     moodle_token_path = get_value_of_nested_at(config, "moodle-token-path")
-    check_file_validity(moodle_token_path, ".txt", None)
+    check_file_validity(moodle_token_path)
     with open(moodle_token_path, "r") as f:
         moodle_token = ensure_alphanumeric(f.read())
 
