@@ -346,6 +346,8 @@ def extract_essential_configs():
 
     download_config = get_value_of_nested_at(config, "download")
     download_insight_directory = get_value_of_nested_at(config, ["download", "insight-directory"])
+    if download_insight_directory is not None:
+        check_directory_validity(download_insight_directory, create=True)
 
 
 def call_api_method(method, args=dict()):
