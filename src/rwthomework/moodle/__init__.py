@@ -434,7 +434,7 @@ def determine_relevant_rulesets(sub_config, ruleset_names):
         if ruleset is not None:
             rulesets[ruleset_name] = ruleset
 
-    return ruleset_names
+    return rulesets
 
 
 fvstring_pattern = re.compile(
