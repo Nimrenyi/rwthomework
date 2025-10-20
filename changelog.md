@@ -1,6 +1,10 @@
 ### 0.0.2.2
 
-- moodle: make progress bar only print on download and add new line after finished
+#### Moodle
+
+- make progress bar only print on download and add new line after finished
+- create insight directory if doesn't exist
+- fixed bug: now you can determine which rulesets should be used
 
 ### 0.0.2.1
 
