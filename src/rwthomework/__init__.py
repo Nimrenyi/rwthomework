@@ -1,4 +1,4 @@
-from matplotlib.pyplot import savefig, rcParams
+from matplotlib.pyplot import savefig, rcParams, clf
 from numpy import zeros, sqrt
 from glob import glob
 import inspect
@@ -6,6 +6,7 @@ import shutil
 import time
 import sys
 import os
+import re
 
 
 class Exercise:
@@ -29,6 +30,7 @@ class Exercise:
         self.verbose = verbose
         self.plot_dark_mode = plot_dark_mode
         self.start_time = time.time()
+        self.exercise_number = ''
 
         importing_filename = inspect.stack()[1].filename
         filepath = os.path.dirname(importing_filename)
@@ -37,7 +39,10 @@ class Exercise:
             os.chdir('..')
         self.plots_dir = self.setup_plots_dir()
 
-        self.exercise_number = sys.argv[0][-5:-3]
+        match = re.match(r'[a-z, A-Z]*(\d*)\..*', sys.argv[0].split('/')[-1])
+        if match:
+            self.exercise_number = match.group(1)
+
         self.EXERCISE_NAME = 'Aufgabenteil'
 
     def check_version(self):
@@ -113,20 +118,24 @@ class Exercise:
             file_mtime = os.path.getmtime(file_path)
             if file_mtime > self.start_time:
                 return
-            is_from_exercise = sys.argv[0][-5:-3] == filename[:2]
+            is_from_exercise = self.exercise_number == filename.split('.')[0][-1]
             if is_from_exercise:
                 os.remove(file_path)
 
-    def save_plot(self, name: str):
-        """
-        Saves a plot in the plot-directory.
-        The exercise number is appended automatically
+    def save_plot(self, name: str, clear=True):
+        """Saves a plot in the plot-directory.
+        The exercise number (if existent) is appended automatically
 
         Args:
-            name (str): name for the plot
+            name (str): _description_
+            clear (bool, optional): _description_. Defaults to True.
         """
-        plot_name = f'{self.plots_dir}{self.exercise_number}-{name}'
-        savefig(plot_name, transparent=self.plot_dark_mode)
+        if self.exercise_number:
+            name = f'{self.exercise_number}-{name}'
+        savefig(self.plots_dir + name, transparent=self.plot_dark_mode)
+        if clear:
+            clf()
+        self.clear_old_plots()
 
     def print_fit_results(self, par, cov):
         """
@@ -170,7 +179,6 @@ class Exercise:
             if self.verbose:
                 print(f'\nAufgabenteil ({method[-1]})\n')
             getattr(self, method)()
-        self.clear_old_plots()
 
 
 def main():
