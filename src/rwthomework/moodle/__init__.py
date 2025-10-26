@@ -168,7 +168,8 @@ def download_files_append_as(obj, path, **kwargs):
 
     # meta["name-path-array"] = name_path
     name_path_string = "\\".join([str(p) for p in name_path])
-    meta["name-path-string"] = name_path_string
+    # meta["name-path-string"] = name_path_string
+    meta["location"] = name_path_string
 
     return meta
 
@@ -393,6 +394,13 @@ def find_all_downloadable_files():
 
     # find all assignment ids
     assign_ids = download_assignment_ids_ars.search_through(download_core_course_get_contents_response)
+    assignment_information = get_value_of_nested_at(download_mod_assign_get_assignments_response, ["courses", 0, "assignments"])
+    allowed_assign_ids = []
+    for assign_info in assignment_information:
+        if ("id" in assign_info) and (assign_info["id"] in assign_ids):
+            allowed_assign_ids += [assign_info["id"]]
+
+    assign_ids = allowed_assign_ids
 
     # find all assignment names
     download_assignment_names = {"assignment-" + str(assign_id): download_assignment_names_ars.search_through(download_mod_assign_get_assignments_response, assignment_id=assign_id)[0] for assign_id in assign_ids}
@@ -575,7 +583,8 @@ def get_download_info(filemeta, ruleset, force_dict):
             location_whitelist = [location_whitelist]
 
         for location_white in location_whitelist:
-            res = re.search(location_white, filemeta["name-path-string"])
+            # res = re.search(location_white, filemeta["name-path-string"])
+            res = re.search(location_white, filemeta["location"])
             if bool(res):
                 foundmatch = True
                 groupdict = res.groupdict()
