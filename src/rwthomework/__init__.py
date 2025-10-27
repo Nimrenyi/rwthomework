@@ -137,7 +137,7 @@ class Exercise:
             clf()
         self.clear_old_plots()
 
-    def print_fit_results(self, par, cov):
+    def print_fit_results(self, par, cov, names=None):
         """
         Print parameters and errors
 
@@ -154,9 +154,12 @@ class Exercise:
             return rho
         rho = GetKorrelationMatrix(cov)
         print("\n      Fit parameters                correlationen")
-        print("-------------------------------------------------------")
+        print("-"*55)
         for i in range(len(par)):
-            Output = f"{i:3.0f} par = {par[i]:.3e} +/- {sqrt(cov[i, i]):.3e}"
+            par_name = f'{i:3.0f} par'
+            if names:
+                par_name = names[i]
+            Output = f"{par_name} = {par[i]:.3e} +/- {sqrt(cov[i, i]):.3e}"
             for j in range(len(par)):
                 Output += f"   {rho[i, j]:.2f} "
 
