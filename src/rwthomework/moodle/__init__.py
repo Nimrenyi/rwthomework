@@ -155,11 +155,15 @@ def download_files_append_as(obj, path, **kwargs):
                 name_path += [str(path[i])]
 
     if origin == "assignment":
-        if "submission" in path:
-            origin = "submission"
+        for p in path:
+            if not isinstance(p, str):
+                continue
 
-        if "feedback" in path:
-            origin = "feedback"
+            if "submission" in p:
+                origin = "submission"
+
+            if "feedback" in p:
+                origin = "feedback"
 
         assignment = path[0]
         name_path = [assignment, origin, download_assignment_names[assignment]]

@@ -12,6 +12,7 @@
 - fixed bug: visible assignments that deny access caused moodle (the subpackage, not the server LOL) to stop
 - renamed name-path-string to location because in rulesets it is called location
 - token file doesn't need to have file extension .txt anymore.
+- Moodle differentiates between submissions and teamsubmissions. This caused issues with the origin rule. Fixed.
 
 ### 0.0.2.1
 
