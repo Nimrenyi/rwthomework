@@ -570,8 +570,8 @@ def get_download_info(filemeta, ruleset, force_dict):
         if not isinstance(filename_blacklist, list):
             filename_blacklist = [filename_blacklist]
 
-        for filename_white in filename_whitelist:
-            res = re.search(filename_white, filemeta["filename"])
+        for filename_black in filename_blacklist:
+            res = re.search(filename_black, filemeta["filename"])
             foundmatch |= bool(res)
 
         if foundmatch:
