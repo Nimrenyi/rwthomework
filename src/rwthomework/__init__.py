@@ -39,7 +39,7 @@ class Exercise:
             os.chdir('..')
         self.plots_dir = self.setup_plots_dir()
 
-        match = re.match(r'[a-z, A-Z]*(\d*)\..*', sys.argv[0].split('/')[-1])
+        match = re.match(r'[a-z, A-Z]*(\d*)\..*', os.path.basename(sys.argv[0]))
         if match:
             self.exercise_number = match.group(1)
 
