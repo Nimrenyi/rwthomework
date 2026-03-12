@@ -54,19 +54,23 @@ class Exercise:
                 '\n Diese kann z.B. mit pip install --force-reinstall rwthomework==', self.version
             )
 
-    def recursive_filesearch(self, file_name):
+    def recursive_filesearch(self, file_name, full_output=False):
         """
         Searches in the file-tree for files matching the name.
 
         Args:
             file_name (str): pattern that must be contained
+            full_output (default=False): returns list of results if True
 
         Returns:
             str: path of the first file that was found.
         """
         search_results = glob(f'**/*{file_name}*', recursive=True)
         if search_results:
-            return search_results[0]
+            if full_output:
+                return search_results
+            else:
+                return search_results[0]
         return ''
 
     def setup_plots_dir(self):
