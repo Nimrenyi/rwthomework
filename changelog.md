@@ -1,3 +1,8 @@
+### 0.0.3.3
+
+- update plot font-size to 12pt
+- update recursive_filesearch to make full result available
+
 ### 0.0.3.2
 
 #### moodle
