@@ -22,7 +22,7 @@ class Exercise:
         - print_optimize_results
 
     Methods that run automatically:
-        - tracefunc
+        - run  (runs all methods that start with 'exercise_')
         - clear_old_plots
     """
     def __init__(self, version='', verbose=True, plot_dark_mode=False):
@@ -81,7 +81,7 @@ class Exercise:
             'font.family': 'sans-serif',
             'font.sans-serif': ['CMU Sans Serif', 'Helvetica'],
             'savefig.format': 'pdf',
-            'font.size': 16.0,
+            'font.size': 12.0,
             'font.weight': 'bold',
             'axes.labelsize': 'medium',
             'axes.labelweight': 'bold',
