@@ -1,3 +1,8 @@
+### 0.0.3.4
+
+- update darkmode bg and colormap
+- add fitools and plotting
+
 ### 0.0.3.3
 
 - update plot font-size to 12pt

@@ -1,5 +1,5 @@
-from matplotlib.pyplot import savefig, rcParams, clf
-from numpy import zeros, sqrt
+from matplotlib.pyplot import savefig, rcParams, clf, cycler, cm
+from numpy import zeros, sqrt, linspace
 from glob import glob
 import inspect
 import shutil
@@ -7,6 +7,8 @@ import time
 import sys
 import os
 import re
+
+RWTHOMEWORK_BG = [26/255, 26/255, 31/255]
 
 
 class Exercise:
@@ -95,6 +97,9 @@ class Exercise:
 
         if self.plot_dark_mode:
             rcParams.update({
+                'axes.prop_cycle': cycler('color', cm.plasma(linspace(0, 1, 6))),
+                'figure.facecolor': RWTHOMEWORK_BG,
+                'axes.facecolor': RWTHOMEWORK_BG,
                 "ytick.color": "w",
                 "xtick.color": "w",
                 "axes.labelcolor": "w",
