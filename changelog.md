@@ -1,12 +1,16 @@
-### 0.0.3.4
+### 0.0.3.5
 
 - update darkmode bg and colormap
 - add fitools and plotting
 
-### 0.0.3.3
+### 0.0.3.4
 
 - update plot font-size to 12pt
 - update recursive_filesearch to make full result available
+
+### 0.0.3.3
+
+- ???
 
 ### 0.0.3.2
 
