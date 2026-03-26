@@ -1,3 +1,11 @@
+### 0.0.3.7
+
+- use latex font as standard
+
+### 0.0.3.6
+
+- fitools: fit plotting: add optional kwarg err_args
+
 ### 0.0.3.5
 
 - update darkmode bg and colormap

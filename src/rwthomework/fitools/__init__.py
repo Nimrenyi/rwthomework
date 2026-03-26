@@ -177,7 +177,9 @@ class Fit:
     err_kwargs = {"alpha": 0.5, "zorder": 40}
     pull_kwargs = {"fmt": ".", "elinewidth": 0.7, "capsize": 3, "zorder": 20}
 
-    def __init__(self, f, points: list, params: list, err=None, label=None, fit_color=None, pull_color=None, errscale=1):
+    def __init__(self, f, points: list, params: list, err=None, label=None, fit_color=None, pull_color=None, errscale=1, err_args=()):
+        self.err_args = err_args
+
         self.params = params
         self.fit_function = f
         self.has_err = (err is not None)
@@ -208,7 +210,7 @@ class Fit:
         return self.fit_function(x, *self.params)
 
     def err(self, x):
-        return self._err(x, *self.params)
+        return self._err(x, *self.params, *self.err_args)
 
     def plot(self, axs, data):
         # plot line
