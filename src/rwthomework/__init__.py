@@ -84,8 +84,8 @@ class Exercise:
         """
         rcParams.update({
             'text.usetex': True,
-            'font.family': 'sans-serif',
-            'font.sans-serif': ['CMU Sans Serif', 'Helvetica'],
+            'font.family': 'serif',
+            'font.serif': ['cmunrm'],
             'savefig.format': 'pdf',
             'font.size': 12.0,
             'font.weight': 'bold',
