@@ -5,6 +5,7 @@ import pymupdf
 import random
 import re
 import os
+from numpy import array, ndarray
 
 
 PATTERNS = {
@@ -98,7 +99,7 @@ def convert_values_to_strings(obj, table_mode=False):
     if isinstance(obj, dict):
         return {key: convert_values_to_strings(value, table_mode) for key, value in obj.items()}
 
-    elif isinstance(obj, (list, tuple)):
+    elif isinstance(obj, (list, tuple, ndarray)):
         return [convert_values_to_strings(item, table_mode) for item in obj]
 
     elif isinstance(obj, UFloat) or isinstance(obj, AffineScalarFunc):
@@ -224,7 +225,8 @@ def write_data_table(*args, name=None, collumns='', caption="", vlines=None, tab
 
 
 def main():
-    extract_exercises_from_pdf('', 'ExIV')
+    print(type(array([1, 2])))
+    print(convert_values_to_strings(array([1, 2])))
 
 
 if __name__ == "__main__":

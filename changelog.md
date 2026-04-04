@@ -1,3 +1,7 @@
+### 0.0.3.9
+
+- fix ndarray to str conversion
+
 ### 0.0.3.8
 
 - add "add_to_dictionary" to curve_fit_lsq
