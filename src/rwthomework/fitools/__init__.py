@@ -2,6 +2,7 @@ from matplotlib import lines as mpl_lines, patches as mpl_patches
 
 import matplotlib.pyplot as plt
 import numpy as np
+import inspect
 from scipy.optimize import curve_fit
 from odrpack import odr_fit
 
@@ -49,26 +50,41 @@ class Multi_Gauss():
         return f
 
 
-def curve_fit_lsq(f, x, y, p0, ey=[], bounds=(-np.inf, np.inf), verbose=False, fit_window=[]):
-    """Curve fit wrapper
+def curve_fit_lsq(f, x, y, p0=[], ey=[], bounds=(-np.inf, np.inf), verbose=False, fit_window=[], add_to_dict=('', dict()), **kwargs):
+    """scipy curve_fit wrapper with chi2 statistics, fit_window and dictionary updater
 
     Args:
-        f (function): optimize target
-        x (array_like): x-data
-        y (array_like): y-data
-        p0 (array_like, optional): starting parameters. Defaults to None1.
-        yerror (array_like, optional): errors on y-data. Defaults to None.
+        f (callable): fit function
+        x (ArrayLike): X-data
+        y (ArrayLike): Y-data
+        p0 (ArrayLike): Inital guess for parameters. Defauls to 1 for all parameters
+        ey (ArrayLike, optional): Y-erors. Defaults to 1.
+        bounds (tuple, optional): Bounds for parameters, see curve_fit. Defaults to (-np.inf, np.inf).
+        verbose (bool, optional): Print everything. Defaults to False.
+        fit_window (list, optional): Either a boolean array for indexing, or tuple of (xmin, xmax) for fitting. Defaults to [].
+        add_to_dict (tuple, optional): Dict-key and dict in which resus and staistics will be added. Defaults to ('', dict()).
 
     Returns:
         list: popt, perr, chi2, dof, cov
     """
     if not any(ey):
-        ey = np.ones(len(y))
+        if verbose:
+            print('You did not provide any errors on the y-data. Using np.ones instead.')
+        ey = np.ones_like(x)
 
     if len(fit_window):
-        x = x[fit_window]
-        y = y[fit_window]
-        ey = ey[fit_window]
+        if len(fit_window) == 2:
+            if verbose:
+                print('Got interval boundaries. Determining fit_window...')
+            fit_window = (x > np.array(fit_window[0])) & (x < np.array(fit_window[1]))
+
+        x = np.array(x)[fit_window]
+        y = np.array(y)[fit_window]
+        ey = np.array(ey)[fit_window]
+
+    if not len(p0):
+        num_args = len(inspect.signature(f).parameters) - 1
+        p0 = np.ones(num_args)
 
     dof = len(y) - len(p0)
 
@@ -79,12 +95,24 @@ def curve_fit_lsq(f, x, y, p0, ey=[], bounds=(-np.inf, np.inf), verbose=False, f
         p0,
         ey,
         absolute_sigma=1,
-        bounds=bounds
+        bounds=bounds,
+        **kwargs
     )
 
     perr = np.sqrt(np.diag(cov))
 
     chi2 = (np.square((f(x, *popt) - y) / ey)).sum()
+
+    if add_to_dict:
+        name, dicti = add_to_dict
+        dicti[name] = {
+            'popt': popt,
+            'perr': perr,
+            'chi2': chi2,
+            'dof': dof,
+            'chi2/dof': chi2/dof,
+            'chi2-interval': list(chi2_sigma_intervall(dof))
+        }
 
     if verbose:
         print(f'chi2/dof = {chi2:.1g}/{dof} = {chi2/dof:.2g}')
@@ -340,10 +368,13 @@ def plot_pull_statistic(axs, pulls, xlim, color):
 
 
 def main():
-    peaks = Multi_Gauss(2, 'linear')
-    print(peaks(
-        0,
-        *[-1, 1, 2],
-        *[1, 1, 2],
-        1, 1
-    ))
+    x = np.arange(20)
+    y = np.arange(20) + np.random.randn(20)
+
+    def f(x, a, b):
+        return a*x + b
+
+    dicti = {'a': 1}
+
+    curve_fit_lsq(f, x, y, fit_window=[1, 18], add_to_dict=('test', dicti))
+    print(dicti)

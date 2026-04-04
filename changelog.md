@@ -1,3 +1,8 @@
+### 0.0.3.8
+
+- add "add_to_dictionary" to curve_fit_lsq
+- minor updates "curve_fit_lsq" verbose behavior
+
 ### 0.0.3.7
 
 - use latex font as standard
