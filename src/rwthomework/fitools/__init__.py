@@ -3,9 +3,12 @@ from matplotlib import lines as mpl_lines, patches as mpl_patches
 import matplotlib.pyplot as plt
 import numpy as np
 import inspect
+import warnings
 from scipy.optimize import curve_fit
 from odrpack import odr_fit
+from uncertainties.unumpy import uarray
 
+from ..textools import write_data_table
 from ..plotting import PLOT_SIZE2
 
 
@@ -50,6 +53,112 @@ class Multi_Gauss():
         return f
 
 
+def meta_curve_fit(
+    func, x, y,
+    p0=[], ex=[], ey=[],
+    x_window=[],
+    fit_specifier='',
+    add_to_dict=dict(),
+    parameter_table_from_names=[],
+    verbose=False,
+    table_kwargs=dict(),
+    **kwargs
+):
+    fit_needs_odr = bool(len(ex))
+
+    def vprint(msg):
+        if verbose:
+            print(msg)
+
+    # create function for curve_fit or odr_fir
+    if fit_needs_odr:
+        def f(x, beta):
+            return func(x, *beta)
+
+    else:
+        def f(x, *args):
+            # print(args)
+            return func(x, *args)
+
+    # Check y-errors
+    if isinstance(ey, (float, int)):
+        ey = np.ones_like(y) * ey
+
+    if not any(ey):
+        vprint('You did not provide any errors on the y-data. Using np.ones instead.')
+        ey = np.ones_like(x)
+
+    # Check x-errors
+    if isinstance(ex, (float, int)):
+        ex = np.ones_like(x) * ex
+
+    if not any(ex):
+        ex = np.ones_like(x) * min(ey) * 1e-100
+
+    # Check and apply window
+    if any(x_window):
+        x_window = list(sorted(x_window))
+        if len(x_window) == 2:
+            vprint('Got interval boundaries. Determining fit_window...')
+            x_window = (x > np.array(x_window[0])) & (x < np.array(x_window[1]))
+
+        x = np.array(x)[x_window]
+        y = np.array(y)[x_window]
+        ey = np.array(ey)[x_window]
+        ex = np.array(ex)[x_window]
+
+    if not len(p0):
+        parameter_number = len(inspect.signature(func).parameters) - 1
+        p0 = np.ones(parameter_number)
+
+    dof = len(y) - parameter_number
+
+    if fit_needs_odr:
+        result = odr_fit(f, x, y, p0, weight_x=1/ex**2, weight_y=1/ey**2, **kwargs)
+
+        popt = result.beta
+        cov = result.cov_beta
+        perr = result.sd_beta
+        chi2 = result.sum_square
+
+    else:
+        popt, cov = curve_fit(f, x, y, p0, ey, absolute_sigma=1, **kwargs)
+        perr = np.sqrt(np.diag(cov))
+        chi2 = (np.square((f(x, *popt) - y) / ey)).sum()
+
+    upopt = uarray(popt, perr)
+
+    vprint(f'chi2/dof = {chi2:.3e}/{dof} = {chi2/dof:.3e}')
+    vprint(f'1-sigma-interval: {chi2_sigma_intervall(dof)}')
+
+    if add_to_dict:
+        add_to_dict[fit_specifier] = {
+            'popt': upopt,
+            'cov': cov,
+            'chi2': chi2,
+            'dof': dof,
+            'chi2/dof': chi2/dof,
+            'chi2-interval': chi2_sigma_intervall(dof)
+        }
+
+    if any(parameter_table_from_names):
+        parameter_names = parameter_table_from_names
+
+        if len(parameter_names) != parameter_number:
+            vprint(f'Your parameter names ({len(parameter_names)}) do not match the number of arguments ({parameter_number}).')
+            parameter_names = [f'$p_{i}$' for i in range(parameter_number)]
+
+        write_data_table(
+            parameter_names, upopt,
+            name=fit_specifier,
+            header=['parameter', 'value'],
+            table=False,
+            **table_kwargs
+        )
+
+    return popt, perr, chi2, dof, cov
+
+
 def curve_fit_lsq(f, x, y, p0=[], ey=[], bounds=(-np.inf, np.inf), verbose=False, fit_window=[], add_to_dict=('', dict()), **kwargs):
     """scipy curve_fit wrapper with chi2 statistics, fit_window and dictionary updater
 
@@ -67,65 +176,16 @@ def curve_fit_lsq(f, x, y, p0=[], ey=[], bounds=(-np.inf, np.inf), verbose=False
     Returns:
         list: popt, perr, chi2, dof, cov
     """
-    if not any(ey):
-        if verbose:
-            print('You did not provide any errors on the y-data. Using np.ones instead.')
-        ey = np.ones_like(x)
+    warnings.warn("'curve_fit_lsq' is deprecated since rwthomework 0.0.4.0 you should use 'meta_curve_fit' instead!", DeprecationWarning)
 
-    if len(fit_window):
-        if len(fit_window) == 2:
-            if verbose:
-                print('Got interval boundaries. Determining fit_window...')
-            fit_window = (x > np.array(fit_window[0])) & (x < np.array(fit_window[1]))
-
-        x = np.array(x)[fit_window]
-        y = np.array(y)[fit_window]
-        ey = np.array(ey)[fit_window]
-
-    if not len(p0):
-        num_args = len(inspect.signature(f).parameters) - 1
-        p0 = np.ones(num_args)
-
-    dof = len(y) - len(p0)
-
-    popt, cov = curve_fit(
-        f,
-        x,
-        y,
-        p0,
-        ey,
-        absolute_sigma=1,
-        bounds=bounds,
-        **kwargs
-    )
-
-    perr = np.sqrt(np.diag(cov))
-
-    chi2 = (np.square((f(x, *popt) - y) / ey)).sum()
-
-    if add_to_dict:
-        name, dicti = add_to_dict
-        dicti[name] = {
-            'popt': popt,
-            'perr': perr,
-            'chi2': chi2,
-            'dof': dof,
-            'chi2/dof': chi2/dof,
-            'chi2-interval': list(chi2_sigma_intervall(dof))
-        }
-
-    if verbose:
-        print(f'chi2/dof = {chi2:.1g}/{dof} = {chi2/dof:.2g}')
-        print('1σ-int:', chi2_sigma_intervall(dof))
-
-    return popt, perr, chi2, dof, cov
+    return meta_curve_fit(f, x, y, p0=p0, ey=ey, x_window=fit_window, bounds=bounds, verbose=verbose, fit_specifier=add_to_dict[0], add_to_dict=add_to_dict[1], **kwargs)
 
 
 def chi2_sigma_intervall(dof):
     return 1 + np.array([-1, 1]) * np.sqrt(2/dof)
 
 
-def linear_reg_odr(x, y, ex, ey, p0, fit_window=[]):
+def linear_reg_odr(x, y, ex, ey, p0, fit_window=[], **kwargs):
     """lin reg ODR
 
     Args:
@@ -138,26 +198,12 @@ def linear_reg_odr(x, y, ex, ey, p0, fit_window=[]):
     Returns:
         list: popt, perr, chi2, dof, cov
     """
-    if len(fit_window):
-        x = x[fit_window]
-        y = y[fit_window]
-        ex = ex[fit_window]
-        ey = ey[fit_window]
-
     def f(x, beta):
         return beta[0]*x + beta[1]
 
-    sol = odr_fit(f, x, y, p0)
+    warnings.warn("'linear_reg_odr' is deprecated since rwthomework 0.0.4.0 you should use 'meta_curve_fit' instead!", DeprecationWarning)
 
-    popt = sol.beta
-    perr = sol.sd_beta
-
-    chi2 = np.sum((sol.eps / np.sqrt(ey**2 + (popt[0]*ex)**2))**2)
-
-    dof = len(x)-2
-    cov = sol.cov_beta
-
-    return popt, perr, chi2, dof, cov
+    return meta_curve_fit(f, x, y, p0, ex, ey, fit_window, **kwargs)
 
 
 class Data:
@@ -371,10 +417,13 @@ def main():
     x = np.arange(20)
     y = np.arange(20) + np.random.randn(20)
 
+    ex = np.ones_like(x)
+    ey = np.ones_like(y)
+
     def f(x, a, b):
         return a*x + b
 
     dicti = {'a': 1}
 
-    curve_fit_lsq(f, x, y, fit_window=[1, 18], add_to_dict=('test', dicti))
-    print(dicti)
+    meta_curve_fit(f, x, y, ey=ey, add_to_dict=dicti, fit_specifier='test', verbose=1, parameter_table_from_names=['$a$', '$b$'])
+    # print(dicti)

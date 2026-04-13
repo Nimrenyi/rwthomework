@@ -14,7 +14,11 @@ classifiers = [
 ]
 dependencies = [
   "matplotlib",
-  "requests"
+  "requests",
+  "uncertainties",
+  "scipy",
+  "odrpack",
+  "pymupdf"
 ]
 license = "GPL-3.0"
 license-files = ["LICEN[CS]E*"]

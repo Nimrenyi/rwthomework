@@ -1,11 +1,11 @@
 from uncertainties.core import AffineScalarFunc
-from uncertainties import UFloat
+from uncertainties import UFloat, ufloat
 import string
 import pymupdf
 import random
 import re
 import os
-from numpy import array, ndarray
+from numpy import ndarray, sqrt
 
 
 PATTERNS = {
@@ -18,6 +18,56 @@ PATTERNS = {
         'subexercise': r'^[\s]*(\([a-z]\))'
     }
 }
+
+
+def get_tag(u):
+    if u.tag:
+        return u.tag.split('-')[0]
+    else:
+        return 'untagged'
+
+
+def ufloat_to_str(u):
+    error_dict = u.error_components()
+
+    merged_square_uncertainties = dict()
+    for variable, contribution in error_dict.items():
+        tag = get_tag(variable)
+        if tag not in merged_square_uncertainties.keys():
+            merged_square_uncertainties[tag] = contribution**2
+        else:
+            merged_square_uncertainties[tag] += contribution**2
+    merged_uncertainties = {k: sqrt(v) for k, v in merged_square_uncertainties.items()}
+    merged_uncertainties = dict(sorted(merged_uncertainties.items()))
+
+    minimal_uncertainty = min(merged_uncertainties.values())
+    longest_representation = str(ufloat(u.n, minimal_uncertainty))
+
+    match = re.match(r"[\(]?([\d.]*)[\+\/-]*([\d.]*)[\)]?e?([\+\d]*)?", longest_representation)
+    num, err, exp = match.groups()
+
+    if not exp:
+        exp = 0
+
+    match = re.match(r'(\d*)\.?(\d*)', num)
+    _, decimal_digits = match.groups()
+
+    N = len(decimal_digits)
+    if not N:
+        N = None
+
+    output_parts = [num]
+    for merged_uncertainty in merged_uncertainties.values():
+        exponent_free_uncertainty = float(merged_uncertainty)/float(f'1e{exp}')
+        rounded_uncertainty = round(exponent_free_uncertainty, N)
+        output_parts += [str(rounded_uncertainty)]
+
+    output = '+-'.join(output_parts)
+
+    if exp:
+        output = f'{output}e{exp}'
+
+    return output
 
 
 def extract_exercises_from_pdf(pdf_path, pattern=''):
@@ -102,18 +152,8 @@ def convert_values_to_strings(obj, table_mode=False):
     elif isinstance(obj, (list, tuple, ndarray)):
         return [convert_values_to_strings(item, table_mode) for item in obj]
 
-    elif isinstance(obj, UFloat) or isinstance(obj, AffineScalarFunc):
-        ustr = str(obj)
-        if re.search(r'\(?\)', str(obj)):
-            num1 = ustr.split('+-')[0].replace('(', '')
-            num2 = ustr.split('+-')[-1].split(')')[0]
-            exp = ustr.split('+-')[-1].split(')')[-1]
-            ustr = f"{num1}+-{num2}{exp}"
-        else:
-            ustr = f'{obj}'
-        if table_mode:
-            ustr = f'\\num{{{ustr}}}'
-        return ustr
+    elif isinstance(obj, (UFloat, AffineScalarFunc)):
+        return ufloat_to_str(obj)
 
     elif isinstance(obj, float):
         if obj < 1e2 or obj > 1e-2:
@@ -225,8 +265,15 @@ def write_data_table(*args, name=None, collumns='', caption="", vlines=None, tab
 
 
 def main():
-    print(type(array([1, 2])))
-    print(convert_values_to_strings(array([1, 2])))
+    a = ufloat(100, 10, 'sys-a')
+    b = ufloat(1, 10, 'sys-b')
+    c = ufloat(1, 1, 'sys-b')
+    d = ufloat(0, 10, 'stat-d')
+    e = ufloat(1, 12, 'stat-e')
+
+    u = a + b / c + d - e
+    # u *= 1e17
+    convert_values_to_strings(u)
 
 
 if __name__ == "__main__":
