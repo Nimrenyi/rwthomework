@@ -1,6 +1,7 @@
 ### 0.0.4.0
 
 - MAJOR odrpack bugfix
+- new ufloat to string conversion
 
 ### 0.0.3.9
 
