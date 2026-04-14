@@ -1,4 +1,9 @@
-### 0.0.4.2 (unreleased)
+### 0.0.4.3 (unreleased)
+
+- bugfix table_mode
+- bugfix recursive filesearch
+
+### 0.0.4.2
 
 - return sorted files
 - bugfix negative numbers
@@ -50,7 +55,7 @@
 
 - filename blacklist caused program crash. fixed.
 
-### 0.0.3.1
+## 0.0.3.1
 
 #### Exercise
 
@@ -70,7 +75,7 @@
 
 - ???
 
-### 0.0.2.0
+## 0.0.2.0
 
 - added "moodle" subpackage for downloading files from moodle
 

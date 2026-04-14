@@ -155,7 +155,11 @@ def convert_values_to_strings(obj, table_mode=False):
         return [convert_values_to_strings(item, table_mode) for item in obj]
 
     elif isinstance(obj, (UFloat, AffineScalarFunc)):
-        return ufloat_to_str(obj)
+        s = ufloat_to_str(obj)
+        if table_mode:
+            return f'\\num{{{s}}}'
+        else:
+            return s
 
     elif isinstance(obj, float):
         if obj < 1e2 or obj > 1e-2:
