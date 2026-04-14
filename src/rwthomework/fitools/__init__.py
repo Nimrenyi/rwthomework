@@ -175,7 +175,7 @@ def curve_fit_lsq(f, x, y, p0=[], ey=[], bounds=(-np.inf, np.inf), verbose=False
     Returns:
         list: popt, perr, chi2, dof, cov
     """
-    warnings.warn("'curve_fit_lsq' is deprecated since rwthomework 0.0.4.0 you should use 'meta_curve_fit' instead!", DeprecationWarning)
+    warnings.warn("'curve_fit_lsq' is deprecated since rwthomework 0.0.4.0 you should use 'meta_curve_fit' instead!", DeprecationWarning, stacklevel=2)
 
     return meta_curve_fit(f, x, y, p0=p0, ey=ey, x_window=fit_window, bounds=bounds, verbose=verbose, fit_specifier=add_to_dict[0], add_to_dict=add_to_dict[1], **kwargs)
 
@@ -200,7 +200,7 @@ def linear_reg_odr(x, y, ex, ey, p0, fit_window=[], **kwargs):
     def f(x, beta):
         return beta[0]*x + beta[1]
 
-    warnings.warn("'linear_reg_odr' is deprecated since rwthomework 0.0.4.0 you should use 'meta_curve_fit' instead!", DeprecationWarning)
+    warnings.warn("'linear_reg_odr' is deprecated since rwthomework 0.0.4.0 you should use 'meta_curve_fit' instead!", DeprecationWarning, stacklevel=2)
 
     return meta_curve_fit(f, x, y, p0, ex, ey, fit_window, **kwargs)
 
@@ -426,5 +426,5 @@ def main():
 
     dicti = {'a': 1}
 
-    meta_curve_fit(f, x, y, ey=ey, fit_specifier='test', verbose=1, parameter_table_from_names=['$a$', '$b$'], x_window=fit_window)
+    curve_fit_lsq(f, x, y, ey=ey)
     print(dicti)

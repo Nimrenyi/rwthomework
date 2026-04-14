@@ -1,4 +1,8 @@
-### 0.0.4.3 (unreleased)
+### 0.0.4.4
+
+- negative ufloats to str fixed
+
+### 0.0.4.3
 
 - bugfix table_mode
 - bugfix recursive filesearch

@@ -43,7 +43,7 @@ def ufloat_to_str(u):
     minimal_uncertainty = min(merged_uncertainties.values())
     longest_representation = str(ufloat(u.n, minimal_uncertainty))
 
-    match = re.match(r"[\(]?([\d\-.]*)[\+\/-]*([\d.]*)[\)]?(e[\+\d\-]*)?", longest_representation)
+    match = re.match(r"[\(]?([\d\-.]*)[\+\/\-]*([\d.]*)[\)]?(e[\+\d\-]*)?", longest_representation)
     num, err, exp = match.groups()
 
     if not exp:
@@ -51,7 +51,7 @@ def ufloat_to_str(u):
     else:
         exp = exp[1:]
 
-    match = re.match(r'(\d*)\.?(\d*)', num)
+    match = re.match(r'\-?(\d*)\.?(\d*)', num)
     _, decimal_digits = match.groups()
 
     N = len(decimal_digits)
@@ -280,6 +280,7 @@ def main():
     u = a + b / c + d - e
     # u *= 1e17
     convert_values_to_strings(u)
+    print(convert_values_to_strings(ufloat(-0.11687, 0.00019)))
 
 
 if __name__ == "__main__":
