@@ -72,7 +72,7 @@ class Exercise:
             if full_output:
                 return search_results
             else:
-                return search_results[0]
+                return sorted(search_results[0])
         return ''
 
     def setup_plots_dir(self):

@@ -1,3 +1,7 @@
+### 0.0.4.2 (unreleased)
+
+- return sorted files
+
 ### 0.0.4.1
 
 - fitools bugifx
