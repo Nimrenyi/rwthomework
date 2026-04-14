@@ -1,3 +1,7 @@
+### 0.0.4.6
+
+- bugfix ufloat formating
+
 ### 0.0.4.5
 
 - bugfix recursive filesearch

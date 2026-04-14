@@ -37,6 +37,10 @@ def ufloat_to_str(u):
             merged_square_uncertainties[tag] = contribution**2
         else:
             merged_square_uncertainties[tag] += contribution**2
+
+    if len(merged_square_uncertainties.items()) == 1:
+        return f'{u:.1u}'
+
     merged_uncertainties = {k: sqrt(v) for k, v in merged_square_uncertainties.items()}
     merged_uncertainties = dict(sorted(merged_uncertainties.items()))
 
@@ -56,13 +60,13 @@ def ufloat_to_str(u):
 
     N = len(decimal_digits)
     if not N:
-        N = None
+        N = 0
 
     output_parts = [num]
+    N = max([0, N-1])
     for merged_uncertainty in merged_uncertainties.values():
         exponent_free_uncertainty = float(merged_uncertainty)/float(f'1e{exp}')
-        rounded_uncertainty = round(exponent_free_uncertainty, N)
-        output_parts += [str(rounded_uncertainty)]
+        output_parts += [f'{exponent_free_uncertainty:.{N}f}']
 
     output = '+-'.join(output_parts)
 
@@ -279,8 +283,9 @@ def main():
 
     u = a + b / c + d - e
     # u *= 1e17
-    convert_values_to_strings(u)
+    print(convert_values_to_strings(u))
     print(convert_values_to_strings(ufloat(-0.11687, 0.00019)))
+    print(convert_values_to_strings(ufloat(-0.019308, 0.000010)))
 
 
 if __name__ == "__main__":
