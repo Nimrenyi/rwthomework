@@ -107,8 +107,8 @@ def meta_curve_fit(
         ey = np.array(ey)[x_window]
         ex = np.array(ex)[x_window]
 
+    parameter_number = len(inspect.signature(func).parameters) - 1
     if not len(p0):
-        parameter_number = len(inspect.signature(func).parameters) - 1
         p0 = np.ones(parameter_number)
 
     dof = len(y) - parameter_number
@@ -131,15 +131,14 @@ def meta_curve_fit(
     vprint(f'chi2/dof = {chi2:.3e}/{dof} = {chi2/dof:.3e}')
     vprint(f'1-sigma-interval: {chi2_sigma_intervall(dof)}')
 
-    if add_to_dict:
-        add_to_dict[fit_specifier] = {
-            'popt': upopt,
-            'cov': cov,
-            'chi2': chi2,
-            'dof': dof,
-            'chi2/dof': chi2/dof,
-            'chi2-interval': chi2_sigma_intervall(dof)
-        }
+    add_to_dict[fit_specifier] = {
+        'popt': upopt,
+        'cov': cov,
+        'chi2': chi2,
+        'dof': dof,
+        'chi2/dof': chi2/dof,
+        'chi2-interval': chi2_sigma_intervall(dof)
+    }
 
     if any(parameter_table_from_names):
         parameter_names = parameter_table_from_names
@@ -417,6 +416,8 @@ def main():
     x = np.arange(20)
     y = np.arange(20) + np.random.randn(20)
 
+    fit_window = [1, 18]
+
     ex = np.ones_like(x)
     ey = np.ones_like(y)
 
@@ -425,5 +426,5 @@ def main():
 
     dicti = {'a': 1}
 
-    meta_curve_fit(f, x, y, ey=ey, add_to_dict=dicti, fit_specifier='test', verbose=1, parameter_table_from_names=['$a$', '$b$'])
-    # print(dicti)
+    meta_curve_fit(f, x, y, ey=ey, fit_specifier='test', verbose=1, parameter_table_from_names=['$a$', '$b$'], x_window=fit_window)
+    print(dicti)

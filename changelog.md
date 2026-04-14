@@ -1,4 +1,9 @@
-### 0.0.4.0
+### 0.0.4.1
+
+- fitools bugifx
+- textools exponent mode bugfix
+
+## 0.0.4.0
 
 - MAJOR odrpack bugfix
 - new ufloat to string conversion
