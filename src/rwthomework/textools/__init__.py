@@ -43,7 +43,7 @@ def ufloat_to_str(u):
     minimal_uncertainty = min(merged_uncertainties.values())
     longest_representation = str(ufloat(u.n, minimal_uncertainty))
 
-    match = re.match(r"[\(]?([\d.]*)[\+\/-]*([\d.]*)[\)]?(e[\+\d]*)?", longest_representation)
+    match = re.match(r"[\(]?([\d\-.]*)[\+\/-]*([\d.]*)[\)]?(e[\+\d\-]*)?", longest_representation)
     num, err, exp = match.groups()
 
     if not exp:

@@ -1,6 +1,7 @@
 ### 0.0.4.2 (unreleased)
 
 - return sorted files
+- bugfix negative numbers
 
 ### 0.0.4.1
 
