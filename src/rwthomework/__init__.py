@@ -70,9 +70,9 @@ class Exercise:
         search_results = glob(f'**/*{file_name}*', recursive=True)
         if search_results:
             if full_output:
-                return search_results
+                return sorted(search_results)
             else:
-                return sorted(search_results[0])
+                return search_results[0]
         return ''
 
     def setup_plots_dir(self):
