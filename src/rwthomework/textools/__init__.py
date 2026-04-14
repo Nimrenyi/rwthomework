@@ -38,9 +38,6 @@ def ufloat_to_str(u):
         else:
             merged_square_uncertainties[tag] += contribution**2
 
-    if len(merged_square_uncertainties.items()) == 1:
-        return f'{u:.1u}'
-
     merged_uncertainties = {k: sqrt(v) for k, v in merged_square_uncertainties.items()}
     merged_uncertainties = dict(sorted(merged_uncertainties.items()))
 
@@ -285,6 +282,7 @@ def main():
     # u *= 1e17
     print(convert_values_to_strings(u))
     print(convert_values_to_strings(ufloat(-0.11687, 0.00019)))
+    print(convert_values_to_strings(ufloat(-0.11687, 0.00019)*1e15))
     print(convert_values_to_strings(ufloat(-0.019308, 0.000010)))
 
 
